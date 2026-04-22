@@ -19,11 +19,98 @@
         }
 
         /* EFEK BACKGROUND (RINGAN) */
+        /* BACKGROUND MEWAH & DINAMIS */
+        body {
+            background: #020205; /* Hitam deep space */
+        }
+
         .nebula {
             position: absolute;
-            width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, rgba(255, 126, 185, 0.1), transparent 70%);
+            width: 100%;
+            height: 100%;
             z-index: 0;
+            filter: blur(80px); /* Kunci agar warna menyatu lembut */
+            opacity: 0.8;
+            overflow: hidden;
+        }
+
+        /* Bola-bola cahaya organik */
+        .blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            mix-blend-mode: screen;
+            animation: move 20s infinite alternate;
+        }
+
+        .blob.pink {
+            background: radial-gradient(circle, #ec8ab6 0%, transparent 70%);
+            top: -10%;
+            left: -10%;
+        }
+
+        .blob.purple {
+            background: radial-gradient(circle, #9333ea 0%, transparent 70%);
+            bottom: -10%;
+            right: -10%;
+            animation-duration: 25s;
+            animation-direction: reverse;
+        }
+
+        .blob.blue {
+            background: radial-gradient(circle, #00d4ff 0%, transparent 70%);
+            top: 40%;
+            left: 30%;
+            width: 600px;
+            height: 600px;
+            animation-duration: 30s;
+        }
+
+        /* EFEK BINTANG KELAP-KELIP */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.5); opacity: 1; box-shadow: 0 0 10px white; }
+        }
+
+        /* Tambahan agar gradasi nebula lebih tajam warnanya */
+        .blob.pink { background: radial-gradient(circle, #ff1b6b 0%, transparent 70%); }
+        .blob.purple { background: radial-gradient(circle, #450eff 0%, transparent 70%); }
+
+        /* Animasi gerakan acak (tidak kaku) */
+        @keyframes move {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30vw, 20vh) scale(1.2); }
+            66% { transform: translate(-10vw, 40vh) scale(0.8); }
+            100% { transform: translate(10vw, -10vh) scale(1.1); }
+        }
+
+        /* Partikel kilauan kecil */
+        .stars-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.4;
+            z-index: 1;
         }
 
         .content-wrapper {
@@ -150,7 +237,13 @@
 </head>
 <body>
 
-    <div class="nebula"></div>
+    <div class="nebula">
+        <div class="blob pink"></div>
+        <div class="blob purple"></div>
+        <div class="blob blue"></div>
+    </div>
+
+    <div class="stars" id="star-container"></div>
 
     <div class="content-wrapper">
         <div class="text-section">
@@ -188,6 +281,31 @@
     </audio>
 
     <script>
+        function createStars() {
+            const container = document.getElementById('star-container');
+            const starCount = 150; // Jumlah bintang
+
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // Ukuran acak
+                const size = Math.random() * 3 + 'px';
+                star.style.width = size;
+                star.style.height = size;
+                
+                // Posisi acak
+                star.style.top = Math.random() * 100 + '%';
+                star.style.left = Math.random() * 100 + '%';
+                
+                // Durasi kedip acak agar tidak barengan (tidak kaku)
+                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                star.style.animationDelay = Math.random() * 5 + 's';
+                
+                container.appendChild(star);
+            }
+        }
+        createStars();
         // Animasi teks saat web dibuka
         setTimeout(() => {
             document.getElementById("note").style.opacity = 1;
