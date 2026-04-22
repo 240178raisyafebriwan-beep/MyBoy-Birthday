@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birthday Project</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        background: black;
+        font-family: 'Quicksand', sans-serif;
+    }
+
+    canvas { display: block; position: absolute; top: 0; left: 0; }
+
+    /* PANEL PASSWORD */
+    #pass-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 85%;
+        max-width: 320px;
+        background: rgba(20, 20, 20, 0.95);
+        padding: 20px;
+        border-radius: 25px;
+        text-align: center;
+        box-shadow: 0 0 25px rgba(255, 126, 185, 0.4);
+        border: 1px solid #ff7eb9;
+        z-index: 100;
+        backdrop-filter: blur(10px);
+    }
+
+    .pass-header img { width: 60px; margin-bottom: 5px; }
+    .pass-header h2 { color: #ff7eb9; font-size: 16px; margin: 10px 0; }
+    
+    /* STYLE UNTUK CLUE/NOTE PASSWORD */
+    .pass-clue {
+        color: #ff7eb9;
+        font-size: 13px;
+        margin-bottom: 15px;
+        font-style: italic;
+        opacity: 0.8;
+    }
+
+    .dots { display: flex; justify-content: center; gap: 8px; margin: 15px 0; }
+    .dot { width: 10px; height: 10px; border: 2px solid #ff7eb9; border-radius: 50%; transition: 0.3s; }
+    .dot.filled { background: #ff7eb9; box-shadow: 0 0 10px #ff7eb9; }
+
+    .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .key {
+        background: rgba(255, 126, 185, 0.1);
+        padding: 12px;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #ffffff;
+        cursor: pointer;
+        border: 1px solid rgba(255, 126, 185, 0.3);
+    }
+    .key:active { background: #ff7eb9; color: black; }
+
+    /* COUNTDOWN */
+    #count {
+        position: absolute;
+        width: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        text-align: center;
+        font-size: 100px;
+        font-weight: bold;
+        color: #ffffff;
+        z-index: 10;
+        display: none;
+        text-shadow: 0 0 20px #ff4da6;
+    }
+
+    /* KONTEN UTAMA */
+    #main-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        text-align: center;
+        z-index: 10;
+        display: none;
+    }
+
+    #title {
+        font-size: 8vw;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 0 15px #ff4da6;
+        margin-bottom: 20px;
+        opacity: 0;
+        transition: 0.8s;
+    }
+
+    /* HATI - Sembunyi di awal */
+    #love-wrapper {
+        opacity: 0;
+        transition: 1s ease;
+        pointer-events: none; /* Biar nggak bisa diklik sebelum muncul */
+    }
+
+    #love { 
+        font-size: 100px; 
+        color: #000; 
+        text-decoration: none; 
+        display: inline-block;
+        text-shadow: 0 0 10px #ff7eb9, 0 0 20px #ff7eb9;
+        animation: pulse 1s infinite;
+    }
+
+    #love-hint {
+        color: white;
+        font-size: 14px;
+        margin-top: 10px;
+        letter-spacing: 2px;
+        font-weight: bold;
+        opacity: 0.7;
+    }
+
+    @keyframes pulse { 0%, 100% {transform: scale(1);} 50% {transform: scale(1.15);} }
+</style>
+</head>
+
+<body>
+
+<canvas id="c"></canvas>
+
+<div id="pass-container">
+    <div class="pass-header">
+        <img src="https://media.tenor.com/On7tS97Wmo8AAAAi/pixel-cat.gif" alt="cat">
+        <h2>Masukkan Password</h2>
+    </div>
+    <div class="pass-clue">Note: Hari spesial kamu ✨</div>
+    
+    <div class="dots">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+    <div class="keypad">
+        <div class="key" onclick="press(1)">1</div><div class="key" onclick="press(2)">2</div><div class="key" onclick="press(3)">3</div>
+        <div class="key" onclick="press(4)">4</div><div class="key" onclick="press(5)">5</div><div class="key" onclick="press(6)">6</div>
+        <div class="key" onclick="press(7)">7</div><div class="key" onclick="press(8)">8</div><div class="key" onclick="press(9)">9</div>
+        <div></div><div class="key" onclick="press(0)">0</div><div class="key" onclick="del()">⌫</div>
+    </div>
+</div>
+
+<div id="count">3</div>
+
+<div id="main-content">
+    <div id="title"></div>
+    <div id="love-wrapper">
+        <a href="halaman2.html" id="love">❤</a>
+        <div id="love-hint">TEKAN HATINYA</div>
+    </div>
+</div>
+
+<script>
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const drops = [];
+for (let i = 0; i < 40; i++) drops[i] = Math.random() * canvas.height;
+
+function draw() {
+    ctx.fillStyle = "rgba(0,0,0,0.1)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.font = "15px monospace";
+    ctx.fillStyle = "#ff4da6";
+    for (let i = 0; i < drops.length; i++) {
+        ctx.fillText("HBD", i * 35, drops[i]);
+        drops[i] += 2;
+        if (drops[i] > canvas.height) drops[i] = 0;
+    }
+}
+setInterval(draw, 33);
+
+const correctPass = "140506"; 
+let inputPass = "";
+const dots = document.querySelectorAll(".dot");
+let audio = new Audio('1000KALI.mp3');
+audio.loop = true;
+
+function press(num) {
+    if (inputPass.length === 0) {
+        audio.play().catch(() => console.log("Play delay"));
+        setInterval(() => { localStorage.setItem("musicTimestamp", audio.currentTime); }, 1000);
+    }
+    if (inputPass.length < 6) {
+        inputPass += num;
+        updateDots();
+        if (inputPass.length === 6) {
+            if (inputPass === correctPass) {
+                document.getElementById("pass-container").style.display = "none";
+                startCountdown();
+            } else {
+                inputPass = "";
+                setTimeout(updateDots, 300);
+                alert("Password Salah!");
+            }
+        }
+    }
+}
+
+function del() { inputPass = inputPass.slice(0, -1); updateDots(); }
+function updateDots() {
+    dots.forEach((dot, index) => {
+        if (index < inputPass.length) dot.classList.add("filled");
+        else dot.classList.remove("filled");
+    });
+}
+
+function startCountdown() {
+    const countEl = document.getElementById("count");
+    countEl.style.display = "block";
+    let timeLeft = 3;
+    const timer = setInterval(() => {
+        timeLeft--;
+        if (timeLeft > 0) {
+            countEl.innerHTML = timeLeft;
+        } else {
+            clearInterval(timer);
+            countEl.style.display = "none";
+            document.getElementById("main-content").style.display = "block";
+            showMessages();
+        }
+    }, 1000);
+}
+
+const messages = ["HAPPY", "BIRTHDAY", "TO", "MY BOYFRIEND", "I LOVE YOU!"];
+let msgIdx = 0;
+
+function showMessages() {
+    const titleEl = document.getElementById("title");
+    const loveWrapper = document.getElementById("love-wrapper");
+    
+    if (msgIdx < messages.length) {
+        titleEl.style.opacity = 0;
+        setTimeout(() => {
+            titleEl.innerHTML = messages[msgIdx];
+            titleEl.style.opacity = 1;
+            
+            // Cek apakah ini pesan terakhir ("I LOVE YOU!")
+            if (messages[msgIdx] === "I LOVE YOU!") {
+                // Munculkan hati SETELAH teks I Love You tampil
+                setTimeout(() => {
+                    loveWrapper.style.opacity = 1;
+                    loveWrapper.style.pointerEvents = "auto";
+                }, 1000);
+            }
+            
+            msgIdx++;
+            setTimeout(showMessages, 1500);
+        }, 400);
+    }
+}
+</script>
+
+</body>
+</html>

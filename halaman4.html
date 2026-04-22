@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Quicksand', sans-serif;
+            color: #ffffff;
+            overflow: hidden; /* Tetap hidden agar hujan hati tidak bikin scroll halaman */
+        }
+
+        .heart {
+            position: absolute;
+            color: #ff7eb9;
+            font-size: 20px;
+            z-index: 1;
+            user-select: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); }
+        }
+
+        .container {
+            width: 85%;
+            max-width: 500px;
+            background: rgba(20, 20, 20, 0.85);
+            padding: 25px;
+            border-radius: 25px;
+            border: 2px solid #ff7eb9;
+            box-shadow: 0 0 25px rgba(255, 126, 185, 0.5);
+            z-index: 10;
+            position: relative;
+            backdrop-filter: blur(8px);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            max-height: 80vh; /* Membatasi tinggi kotak agar tidak melebihi layar HP */
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            color: #ff7eb9;
+            font-size: 28px;
+            margin: 0 0 15px 0;
+            text-shadow: 0 0 10px rgba(255, 126, 185, 0.8);
+            flex-shrink: 0; /* Agar judul tidak ikut mengecil */
+        }
+
+        /* BAGIAN INI YANG DIPERBAIKI AGAR BISA DI-SCROLL */
+        #text-container {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #fce4ec;
+            text-align: left;
+            overflow-y: auto; /* Mengaktifkan scroll vertikal */
+            padding-right: 10px;
+            margin-bottom: 15px;
+            /* Styling Scrollbar agar cantik */
+        }
+
+        #text-container::-webkit-scrollbar {
+            width: 4px;
+        }
+        #text-container::-webkit-scrollbar-thumb {
+            background: #ff7eb9;
+            border-radius: 10px;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 16px;
+            background-color: #ff7eb9;
+            margin-left: 3px;
+            animation: blink 0.6s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+
+        #btn-kembali {
+            display: none;
+            opacity: 0;
+            background-color: transparent;
+            color: #ff7eb9;
+            border: 2px solid #ff7eb9;
+            padding: 8px 20px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            flex-shrink: 0;
+            align-self: center;
+        }
+
+        #btn-kembali.show {
+            display: inline-block;
+            animation: fadeIn 1s forwards;
+        }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Selamat ulang tahun, sayangku 💖</h1>
+        <div id="text-container">
+            <span id="typewriter"></span><span class="cursor" id="cursor"></span>
+        </div>
+        
+        <a href="index.html" id="btn-kembali">Kembali ke Awal</a>
+    </div>
+
+    <audio id="backsound" loop>
+        <source src="1000KALI.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const text = `Aku sangat bersyukur memiliki kamu dalam hidupku. Terima kasih telah menjadi pribadi yang luar biasa—baik hati, penyabar, penuh kasih sayang, dan selalu membuat segalanya terasa lebih hangat hanya dengan kehadiranmu.\n\nSemoga bertambahnya umur kamu membawa kebahagiaan, kedamaian, dan semua kebaikan yang selama ini kamu harapkan. Semoga setiap langkahmu terasa lebih ringan, dan semoga kamu selalu dikelilingi oleh cinta dan orang-orang yang benar-benar peduli padamu. Kamu pantas mendapatkan lebih dari yang kamu sadari.\n\nAku bersyukur bertemu kamu dan semoga juga banyak hari-hari setelahnya. Aku berharap bisa menciptakan lebih banyak kenangan bersamamu, tumbuh bersama, dan mencintaimu dengan cara-cara sederhana yang paling berarti. Selamat ulang tahun!`;
+
+        let i = 0;
+        const speed = 40; 
+        const target = document.getElementById("typewriter");
+        const cursor = document.getElementById("cursor");
+        const btnKembali = document.getElementById("btn-kembali");
+        const textContainer = document.getElementById("text-container");
+        const audio = document.getElementById("backsound");
+
+        function typeWriter() {
+            if (i < text.length) {
+                if (text.charAt(i) === "\n") {
+                    target.innerHTML += "<br>";
+                } else {
+                    target.innerHTML += text.charAt(i);
+                }
+                i++;
+                
+                // OTOMATIS SCROLL KE BAWAH SAAT MENGETIK
+                textContainer.scrollTop = textContainer.scrollHeight;
+                
+                setTimeout(typeWriter, speed);
+            } else {
+                cursor.style.display = "none";
+                btnKembali.classList.add("show");
+            }
+        }
+
+        function createHeart() {
+            const heart = document.createElement("div");
+            heart.classList.add("heart");
+            heart.innerHTML = "❤️"; 
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.animationDuration = Math.random() * 3 + 2 + "s"; 
+            heart.style.opacity = Math.random();
+            heart.style.fontSize = Math.random() * 20 + 10 + "px";
+            document.body.appendChild(heart);
+            setTimeout(() => { heart.remove(); }, 5000);
+        }
+
+        window.onload = function() {
+            typeWriter();
+            setInterval(createHeart, 300);
+
+            const savedTimestamp = localStorage.getItem("musicTimestamp");
+            if (savedTimestamp) {
+                audio.currentTime = parseFloat(savedTimestamp);
+            }
+
+            audio.play().then(() => {
+                setInterval(() => {
+                    localStorage.setItem("musicTimestamp", audio.currentTime);
+                }, 1000);
+            }).catch(e => {
+                console.log("Autoplay diblokir");
+            });
+        };
+    </script>
+</body>
+</html>
