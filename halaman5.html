@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enchanted Garden ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sky-top: #020205;
+            --sky-mid: #0f051a;
+            --sky-bottom: #1a0a2e;
+            --accent: #ff80ab;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            height: 100vh;
+            background: linear-gradient(to bottom, var(--sky-top), var(--sky-mid), var(--sky-bottom));
+            overflow: hidden;
+            font-family: 'Quicksand', sans-serif;
+            color: white;
+        }
+
+        /* NEBULA BACKGROUND */
+        .nebula {
+            position: absolute;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(74, 20, 140, 0.2), transparent 50%);
+            filter: blur(80px);
+            animation: moveNebula 25s infinite alternate;
+            z-index: 1;
+        }
+
+        @keyframes moveNebula {
+            from { transform: translate(-20%, -20%); }
+            to { transform: translate(5%, 5%); }
+        }
+
+        /* STARS */
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            z-index: 2; /* Di atas nebula, di bawah bunga */
+            animation: twinkle var(--t) infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* UI ELEMENTS */
+        .ui-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 100;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 12vh; /* Posisi tulisan dinaikkan */
+        }
+
+        .header-text {
+            text-align: center;
+            animation: fadeInDown 2.5s ease-out;
+            padding: 15px;
+        }
+
+        .header-text h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            text-shadow: 0 0 20px var(--accent), 0 0 40px var(--accent);
+            margin-bottom: 5px;
+        }
+
+        .header-text p {
+            font-weight: 300;
+            letter-spacing: 4px;
+            opacity: 0.8;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px white;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 25px; left: 25px;
+            padding: 10px 22px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            color: white;
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+            font-size: 0.8rem;
+            transition: 0.3s;
+            pointer-events: auto;
+            z-index: 200;
+        }
+
+        /* RUMPUT */
+        .grass-blade {
+            position: absolute;
+            bottom: 0;
+            background: linear-gradient(to top, #051a05, #1b5e20);
+            width: 3px;
+            border-radius: 50% 50% 0 0;
+            transform-origin: bottom center;
+            animation: grassSway var(--d) ease-in-out infinite;
+            z-index: 5;
+        }
+
+        @keyframes grassSway {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        /* GARDEN */
+        .garden-container {
+            position: absolute;
+            bottom: 0; width: 100%; height: 100%;
+            z-index: 10;
+        }
+
+        .flower-item {
+            position: absolute;
+            bottom: -5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform-origin: bottom center;
+            animation: swaying 7s ease-in-out infinite;
+        }
+
+        .stem {
+            width: 4px;
+            background: linear-gradient(to top, #0a240a, #2e7d32);
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .leaf {
+            position: absolute;
+            width: 22px; height: 11px;
+            background: #1b5e20;
+            border-radius: 50% 0 50% 0;
+        }
+        .leaf.left { left: -19px; transform: rotate(-35deg); }
+        .leaf.right { right: -19px; transform: rotate(35deg) scaleX(-1); }
+
+        .flower-head {
+            position: absolute;
+            top: -35px;
+            width: 70px; height: 70px;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .petal {
+            position: absolute;
+            width: 32px; height: 45px;
+            border-radius: 50% 50% 45% 45%;
+            transform-origin: bottom center;
+            filter: drop-shadow(0 0 8px rgba(255,255,255,0.5)); /* Glow kelopak */
+        }
+
+        .center-glow {
+            position: absolute;
+            width: 14px; height: 14px;
+            background: #fff;
+            border-radius: 50%;
+            z-index: 10;
+            box-shadow: 0 0 20px #fff, 0 0 35px #fbc02d; /* Glow tengah bunga */
+        }
+
+        .firefly {
+            position: absolute;
+            width: 4px; height: 4px;
+            background: #ffff8d;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #ffff00;
+            z-index: 50;
+            animation: fireflyMove var(--dur) linear infinite;
+        }
+
+        @keyframes fireflyMove {
+            0% { transform: translate(0, 0) scale(1); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(0.5); opacity: 0; }
+        }
+
+        @keyframes swaying {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="nebula"></div>
+    <div class="stars-container" id="stars"></div>
+    
+    <div class="ui-layer">
+        <div class="header-text">
+            <h1>Enchanted Night</h1>
+            <p>Taman Rahasia Untukmu</p>
+        </div>
+    </div>
+    
+    <a href="index.html" class="back-btn">← back</a>
+
+    <div class="garden-container" id="garden"></div>
+
+    <audio id="backsound" loop><source src="1000KALI.mp3" type="audio/mpeg"></audio>
+
+    <script>
+        const garden = document.getElementById('garden');
+        const starsContainer = document.getElementById('stars');
+        const isMobile = window.innerWidth < 600;
+
+        function initStars() {
+            for (let i = 0; i < 100; i++) {
+                const s = document.createElement('div');
+                s.className = 'star';
+                const size = Math.random() * 2 + 1;
+                s.style.width = size + 'px';
+                s.style.height = size + 'px';
+                s.style.left = Math.random() * 100 + 'vw';
+                s.style.top = Math.random() * 80 + 'vh';
+                s.style.setProperty('--t', (Math.random() * 3 + 2) + 's');
+                starsContainer.appendChild(s);
+            }
+        }
+
+        function createGround() {
+            const grassCount = isMobile ? 60 : 120;
+            for (let i = 0; i < grassCount; i++) {
+                const g = document.createElement('div');
+                g.className = 'grass-blade';
+                g.style.left = Math.random() * 100 + 'vw';
+                g.style.height = (Math.random() * 30 + 20) + 'px';
+                g.style.setProperty('--d', (Math.random() * 2 + 2) + 's');
+                g.style.animationDelay = (Math.random() * -5) + 's';
+                garden.appendChild(g);
+            }
+        }
+
+        function createGarden() {
+            const flowerCount = isMobile ? 15 : 30;
+            const colors = [
+                { p: '#ff80ab', s: '#ad1457' }, 
+                { p: '#e1bee7', s: '#7b1fa2' }, 
+                { p: '#b2ebf2', s: '#0097a7' }, 
+                { p: '#fff9c4', s: '#fbc02d' }
+            ];
+
+            for (let i = 0; i < flowerCount; i++) {
+                const f = document.createElement('div');
+                f.className = 'flower-item';
+                
+                const isBack = Math.random() > 0.5;
+                const h = isBack ? Math.random() * 80 + 70 : Math.random() * 150 + 120;
+                const col = colors[Math.floor(Math.random() * colors.length)];
+                
+                f.style.left = Math.random() * 95 + 'vw';
+                f.style.zIndex = isBack ? 11 : 30;
+                f.style.transform = `scale(${isBack ? 0.6 : 0.9})`;
+                if(isBack) f.style.filter = "brightness(0.7)";
+
+                let leafHTML = '';
+                for(let j=1; j<=Math.floor(h/50); j++) {
+                    const side = j % 2 === 0 ? 'left' : 'right';
+                    leafHTML += `<div class="leaf ${side}" style="bottom: ${j * 40}px;"></div>`;
+                }
+
+                f.innerHTML = `
+                    <div class="stem" style="height: ${h}px">${leafHTML}</div>
+                    <div class="flower-head">
+                        <div class="center-glow"></div>
+                        ${[0, 72, 144, 216, 288].map(deg => `
+                            <div class="petal" style="
+                                transform: rotate(${deg}deg);
+                                background: linear-gradient(to top, ${col.s}, ${col.p});
+                                box-shadow: 0 0 10px ${col.p};
+                            "></div>
+                        `).join('')}
+                    </div>
+                `;
+                garden.appendChild(f);
+            }
+        }
+
+        function spawnFirefly() {
+            const ff = document.createElement('div');
+            ff.className = 'firefly';
+            ff.style.left = Math.random() * 100 + 'vw';
+            ff.style.top = (Math.random() * 40 + 40) + 'vh';
+            const moveX = (Math.random() - 0.5) * 200 + 'px';
+            const moveY = (Math.random() - 1) * 300 + 'px';
+            ff.style.setProperty('--x', moveX);
+            ff.style.setProperty('--y', moveY);
+            ff.style.setProperty('--dur', (Math.random() * 5 + 5) + 's');
+            garden.appendChild(ff);
+            setTimeout(() => ff.remove(), 10000);
+        }
+
+        function initMusic() {
+            const audio = document.getElementById("backsound");
+            const savedTime = localStorage.getItem("musicTimestamp");
+            if (savedTime) audio.currentTime = parseFloat(savedTime);
+            audio.play().catch(() => {});
+            setInterval(() => {
+                localStorage.setItem("musicTimestamp", audio.currentTime);
+            }, 1000);
+        }
+
+        initStars();
+        createGround();
+        createGarden();
+        initMusic();
+        setInterval(spawnFirefly, 700);
+    </script>
+</body>
+</html>
